@@ -14,6 +14,7 @@ Directional_ForceGenerator::Directional_ForceGenerator(std::string name, physx::
 //F = masa * accel
 physx::PxVec3 Directional_ForceGenerator::apply_force(GameObject const& g)
 {
+	if (!active) return{ 0,0,0 };
 	return global_transform.q.rotate(force_magnitude*normalized_force_direction);
 }
 
@@ -63,9 +64,17 @@ Gravity_ForceGenerator::Gravity_ForceGenerator(std::string name, physx::PxVec3 f
 {
 }
 
+void Gravity_ForceGenerator::handle_keyboard_button_down(unsigned char key)
+{
+	if (key == 'g' || key=='G') {
+		toggle();
+	}
+}
+
 //returns the force to give the given object
 physx::PxVec3 Gravity_ForceGenerator::apply_force(GameObject const& g)
 {
+	if (!active)return{ 0,0,0 };
 	auto inv_mass = g.get_inv_mass();
 	if (inv_mass < 0.005f) return { 0,0,0 };
 	return Directional_ForceGenerator::apply_force(g) / inv_mass;
@@ -83,6 +92,7 @@ Wind_ForceGenerator::Wind_ForceGenerator(std::string s, physx::PxVec3 v, float m
 
 physx::PxVec3 Wind_ForceGenerator::apply_force(GameObject const& g)
 {
+	if (!active) return{ 0,0,0 };
 	auto force = Directional_ForceGenerator::apply_force(g);
 	return calculate_force(force, g.get_vel());//cd_p_medios * force * force.magnitude();
 }
@@ -127,10 +137,17 @@ physx::PxVec3 TorbellinoSencillo::apply_force(GameObject const& g)
 	return wind_force;
 }
 
+void TorbellinoSencillo::handle_keyboard_button_down(unsigned char key)
+{
+	if (key == 't'||key=='T') {
+		toggle();
+	}
+}
+
 bool TorbellinoSencillo::inside_area_of_influence(GameObject const& g) const
 {
 	//If distance is greater than 100, it does not affect
-	return (global_transform.p - g.get_global_tr().p).magnitudeSquared() < 10000;
+	return active && (global_transform.p - g.get_global_tr().p).magnitudeSquared() < 10000;
 }
 
 Variable_ForceGenerator::Variable_ForceGenerator(float force_magnitude,
@@ -143,6 +160,7 @@ Variable_ForceGenerator::Variable_ForceGenerator(std::string s, float force_magn
 
 physx::PxVec3 Variable_ForceGenerator::apply_force(GameObject const& g)
 {
+	if (!active) return { 0,0,0 };
 	return force_value_func(force_magnitude,time_since_started, *this, g);
 }
 
@@ -150,21 +168,4 @@ void Variable_ForceGenerator::step(double dt)
 {
 	ForceGenerator::step(dt);
 	time_since_started += dt;
-}
-
-ToggleDirectional_ForceGenerator::ToggleDirectional_ForceGenerator(physx::PxVec3 force_dir, float force_mag, bool start_state)
-	:Directional_ForceGenerator(force_dir, force_mag), active(start_state)
-{
-}
-
-physx::PxVec3 ToggleDirectional_ForceGenerator::apply_force(GameObject const& g)
-{
-	if (active) return Directional_ForceGenerator::apply_force(g);
-
-	return physx::PxVec3(0,0,0);
-}
-
-void ToggleDirectional_ForceGenerator::set_state(bool state)
-{
-	active = state;
 }

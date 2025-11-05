@@ -84,6 +84,12 @@ void EnemyShip::step(double dt)
 	}
 }
 
+void EnemyShip::handle_keyboard_button_down(unsigned char c)
+{
+	if (c == 'e' || c=='E')
+		propulsors->toggle();
+}
+
 /*
 physx::PxQuat get_rotation_to(const physx::PxVec3 from, const physx::PxVec3 to) {
 	physx::PxQuat q;

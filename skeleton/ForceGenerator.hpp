@@ -9,7 +9,12 @@ public:
 	ForceGenerator(std::string name, float force_magnitude);
 	virtual physx::PxVec3 apply_force(GameObject const& g) = 0;
 	void cleanup_me();
+	void set_state(bool state) {
+		active = state;
+	}
+	void toggle() { active = !active; }
 protected:
+	bool active = true;
 	float force_magnitude;
 	std::string my_name = "-1";
 };
@@ -24,19 +29,11 @@ protected:
 	physx::PxVec3 normalized_force_direction;
 };
 
-class ToggleDirectional_ForceGenerator : public Directional_ForceGenerator {
-public:
-	ToggleDirectional_ForceGenerator(physx::PxVec3 force_dir, float force_mag, bool start_state);
-	virtual physx::PxVec3 apply_force(GameObject const& g) override;
-	void set_state(bool state);
-protected:
-	bool active;
-};
-
 class Gravity_ForceGenerator : public Directional_ForceGenerator {
 public:
 	Gravity_ForceGenerator(physx::PxVec3 force_dir, float mag = 9.8f);
 	Gravity_ForceGenerator(std::string name, physx::PxVec3 force_direction, float mag = 9.8f);
+	virtual void handle_keyboard_button_down(unsigned char key) override;
 	virtual physx::PxVec3 apply_force(GameObject const& g) override;
 };
 
@@ -56,6 +53,7 @@ class TorbellinoSencillo : public Wind_ForceGenerator {
 public:
 	TorbellinoSencillo(std::string s, physx::PxVec3, float magnitude, float height = 50.0f, float air_density=1.33, float avance_resistance_aerodinamic_coef=0.5f);
 	virtual physx::PxVec3 apply_force(GameObject const& g) override;
+	virtual void handle_keyboard_button_down(unsigned char key) override;
 protected:
 	virtual bool inside_area_of_influence(GameObject const& g) const;
 	float height;

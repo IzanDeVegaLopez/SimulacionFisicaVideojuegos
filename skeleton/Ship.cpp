@@ -17,13 +17,10 @@ Ship::Ship()
 	addChild(new ShipCannon(global_transform));
 	//add_force_to_myself("black_hole");
 
-	propulsors = new ToggleDirectional_ForceGenerator({0,0,1}, 5/mass.inv_mass, false);
+	propulsors = new Directional_ForceGenerator({0,0,1}, 5/mass.inv_mass);
+	propulsors->set_state(false);
 	add_force_to_myself(propulsors);
 	addChild(propulsors);
-
-	//brakes = new ToggleDirectional_ForceGenerator({ 0,0,-1 }, 3, false);
-	//add_force_to_myself(brakes);
-	//addChild(brakes);
 
 	add_force_to_myself("black_hole");
 }

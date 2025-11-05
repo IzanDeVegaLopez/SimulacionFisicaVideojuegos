@@ -9,6 +9,7 @@ class EnemyShip : public GameObject {
 public:
 	EnemyShip(GameObject*);
 	virtual void step(double dt) override;
+	void handle_keyboard_button_down(unsigned char c) override;
 protected:
 	void think_step(double dt);
 	GameObject* player_go;

@@ -1,7 +1,7 @@
 #pragma once
 #include "GameObject.hpp"
 
-class ToggleDirectional_ForceGenerator;
+class Directional_ForceGenerator;
 
 class Ship : public GameObject {
 public:
@@ -19,7 +19,7 @@ protected:
 		float angle;
 		physx::PxVec3 rotation_axis;
 	};
-	ToggleDirectional_ForceGenerator* propulsors;
+	Directional_ForceGenerator* propulsors;
 	//ToggleDirectional_ForceGenerator* brakes;
 	angular_velocity current_angular_velocity = { 0,{0,0,1} };
 	physx::PxVec2 virar_buttons = {0,0};
